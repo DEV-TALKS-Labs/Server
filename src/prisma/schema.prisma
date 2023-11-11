@@ -1,0 +1,39 @@
+//Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String  @id @default(uuid())
+  name     String  @db.VarChar(255)
+  handle   String  @unique @db.VarChar(255)
+  email    String  @unique @db.VarChar(255)
+  password String  @db.VarChar(255)
+  room     Room?   @relation(fields: [roomId], references: [id])
+  roomId   String?
+}
+
+model Room {
+  id        String  @id @default(uuid())
+  title     String  @db.VarChar(255)
+  maxUsers  Int     @default(12)
+  isMic     Boolean @default(true)
+  roomUsers User[]
+  host      String
+  coHost    String
+  filters Filter[]
+}
+
+model Filter {
+  id   String @id @default(uuid())
+  name String @unique @db.VarChar(255)
+
+  Rooms Room[]
+}
+
