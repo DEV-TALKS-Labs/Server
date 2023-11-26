@@ -1,12 +1,13 @@
 import { Router } from "express";
 import roomsController from "../controllers/rooms.js";
+import userAuth from "../midlewares/userAuth.js";
 const router = Router();
 
 router.get("/", roomsController.getRooms);
-router.post("/");
+router.get("/:id", userAuth, roomsController.getRoom);
 
-router.get("/:id");
-router.put("/:id");
-router.delete("/:id");
-
+router.post("/", userAuth, roomsController.postRooms);
+router.put("/:id", userAuth, roomsController.putRoom);
+router.delete("/:id", userAuth, roomsController.deleteRoom);
+router.patch("/:id/join", userAuth, roomsController.joinRoom);
 export default router;

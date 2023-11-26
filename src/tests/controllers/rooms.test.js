@@ -5,6 +5,25 @@ import app from "../../app.js";
 
 vi.mock("../../libs/prisma.js");
 
+class Room {
+  // id       String  @id @default(uuid())
+  // title    String  @db.VarChar(255)
+  // maxUsers Int     @default(12)
+  // isPublic Boolean @default(true)
+  // hostId String
+  // coHostId String?
+  // filters Filter[]
+
+  constructor(id, title, maxUsers, isPublic, hostId, coHostId, filters) {
+    this.id = id;
+    this.title = title;
+    this.maxUsers = maxUsers;
+    this.isPublic = isPublic;
+    this.hostId = hostId;
+    this.coHostId = coHostId;
+    this.filters = filters;
+  }
+}
 describe("Rooms Controller", () => {
   describe("/api/rooms/ GET", () => {
     test("should get json empty list", async () => {
@@ -20,39 +39,42 @@ describe("Rooms Controller", () => {
 
     test("should get json empty list", async () => {
       // mock prisma.room.findMany with empty array
-      const room1 = {
-        id: "1",
-        title: "room1",
-        maxUsers: 12,
-        isMic: true,
-        host: "1",
-        coHost: "2",
-      };
-      const room2 = {
-        id: "2",
-        title: "room2",
-        maxUsers: 12,
-        isMic: true,
-        host: "1",
-        coHost: "2",
-      };
 
-      prisma.room.findMany.mockResolvedValueOnce([room1, room2]);
-
+      const rooms = [];
+      rooms.push(new Room("1", "room1", 10, true, "1", "2", []));
+      rooms.push(new Room("2", "room2", 10, true, "3", "4", []));
+      prisma.room.findMany.mockResolvedValueOnce(rooms);
       // make request to api
       const response = await request(app).get("/api/rooms");
-      expect(response.body).toEqual([room1, room2]);
+      expect(response.body).toEqual(rooms);
       expect(response.header["content-type"]).toMatch(/application\/json/);
       expect(response.status).toBe(200);
     });
   });
 
-  test("get room using valid id", async () => {
-    //add room to databse using prisma
-    //get the same room from database using api
-    //remove the same room from database using prisma
+  test("post Romms with valid HostID", async () => {
+    const rooms = [];
+    rooms.push(new Room("1", "room1", 10, true, "1", "2", []));
+    rooms.push(new Room("2", "room2", 10, true, "3", "4", []));
+
+    const room = new Room("3", "room3", 10, true, "5", "6", []);
+    prisma.room.create.mockResolvedValueOnce(room);
+    const response = await request(app).post("/api/rooms").send(room);
+    expect(response.body).toEqual(room);
+    expect(response.header["content-type"]).toMatch(/application\/json/);
+    expect(response.status).toBe(200);
   });
-  test("get room using invalid id", async () => {
-    //get room from database using api fake-id
+
+  test("post Romms with invalid HostID", async () => {
+    const rooms = [];
+    rooms.push(new Room("1", "room1", 10, true, "1", "2", []));
+    rooms.push(new Room("2", "room2", 10, true, "3", "4", []));
+
+    const room = new Room("3", "room3", 10, true, "1", "6", []);
+    prisma.room.create.mockRejectedValueOnce(room);
+    const response = await request(app).post("/api/rooms").send(room);
+    expect(response.body).toEqual({ error: "invalid host id" });
+    expect(response.header["content-type"]).toMatch(/application\/json/);
+    expect(response.status).toBe(409);
   });
 });

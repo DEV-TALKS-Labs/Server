@@ -10,8 +10,8 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(uuid())
-  clerkId  String @unique
+  id       String @id
+  token    String @unique
   name     String @db.VarChar(255)
   imageUrl String @db.VarChar(255)
 
@@ -32,8 +32,8 @@ model Room {
   host   User   @relation("Host", fields: [hostId], references: [id])
   hostId String @unique
 
-  coHost   User   @relation("CoHost", fields: [coHostId], references: [id])
-  coHostId String @unique
+  coHost   User?   @relation("CoHost", fields: [coHostId], references: [id])
+  coHostId String? @unique
 
   filters Filter[]
 }
