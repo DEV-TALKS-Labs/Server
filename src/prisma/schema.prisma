@@ -11,10 +11,9 @@ datasource db {
 
 model User {
   id       String @id @default(uuid())
+  clerkId  String @unique
   name     String @db.VarChar(255)
-  UserName String @unique @db.VarChar(255)
-  email    String @unique @db.VarChar(255)
-  password String @db.VarChar(255)
+  imageUrl String @db.VarChar(255)
 
   HostedRoom   Room?   @relation("Host")
   roomId       String?
@@ -23,9 +22,10 @@ model User {
 }
 
 model Room {
-  id       String @id @default(uuid())
-  title    String @db.VarChar(255)
-  maxUsers Int    @default(12)
+  id       String  @id @default(uuid())
+  title    String  @db.VarChar(255)
+  maxUsers Int     @default(12)
+  isPublic Boolean @default(true)
 
   roomUsers User[]
 
