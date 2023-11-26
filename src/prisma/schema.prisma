@@ -10,23 +10,31 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(uuid())
-  name     String  @db.VarChar(255)
-  handle   String  @unique @db.VarChar(255)
-  email    String  @unique @db.VarChar(255)
-  password String  @db.VarChar(255)
-  room     Room?   @relation(fields: [roomId], references: [id])
-  roomId   String?
+  id       String @id @default(uuid())
+  name     String @db.VarChar(255)
+  UserName String @unique @db.VarChar(255)
+  email    String @unique @db.VarChar(255)
+  password String @db.VarChar(255)
+
+  HostedRoom   Room?   @relation("Host")
+  roomId       String?
+  Room         Room?   @relation(fields: [roomId], references: [id])
+  coHostedRoom Room?   @relation("CoHost")
 }
 
 model Room {
-  id        String  @id @default(uuid())
-  title     String  @db.VarChar(255)
-  maxUsers  Int     @default(12)
-  isMic     Boolean @default(true)
+  id       String  @id @default(uuid())
+  title    String  @db.VarChar(255)
+  maxUsers Int     @default(12)
+
   roomUsers User[]
-  host      String
-  coHost    String
+
+  host   User   @relation("Host", fields: [hostId], references: [id])
+  hostId String @unique
+
+  coHost   User   @relation("CoHost", fields: [coHostId], references: [id])
+  coHostId String @unique
+
   filters Filter[]
 }
 
@@ -36,4 +44,3 @@ model Filter {
 
   Rooms Room[]
 }
-
