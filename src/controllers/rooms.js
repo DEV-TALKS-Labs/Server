@@ -47,7 +47,11 @@ const postRooms = async (req, res) => {
         maxUsers,
         isPublic,
         hostId,
-        filters,
+        filters:{
+          connect: filters.map(filterName => ({
+            name: filterName,
+          })),
+        },
         roomUsers: {
           connect: {
             id: hostId,
