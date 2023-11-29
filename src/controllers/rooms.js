@@ -59,7 +59,7 @@ const postRooms = async (req, res) => {
         },
       },
     });
-    return res.json(room);
+    return res.status(201).json(room);
   } catch (error) {
     if (error.code === "P2002") {
       console.error("User Cann't host more than one room", hostId);
