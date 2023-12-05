@@ -1,11 +1,13 @@
-import { jwtDecode } from "jwt-decode";
-
+import { decode } from "next-auth/jwt";
 const userAuth = async (req, res, next) => {
   const { authorization: token } = req.headers;
   try {
-    const decoded = jwtDecode(token.split(" ")[1]);
-    if (!decoded.sub) return res.status(409).send({ error: "invalid Tocken" });
-    req.body.id = decoded.sub;
+    const decodingKey = process.env.NEXTAUTH_SECRET;
+    console.log(token);
+
+    const decodedToken = await decode({ token, secret: decodingKey });
+    console.log("decodedToken", decodedToken);
+    req.body.id = decodedToken.id;
     next();
   } catch (error) {
     return res.status(409).send({ error: "invalid Tocken" });

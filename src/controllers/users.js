@@ -4,7 +4,6 @@ const postUser = async (req, res) => {
   try {
     //TODO pass name, imageUrl from fronted
     const { id, name, imageUrl } = req.body;
-    console.log(id, name, imageUrl);
     const user = await prisma.user.create({
       data: {
         id,
