@@ -121,7 +121,7 @@ const deleteRoom = async (req, res) => {
   }
 };
 
-const joinRoom = async (req, res) => {
+const joinRoom = async (req, res, next) => {
   const { id } = req.params;
   const { id: userId } = req.body;
 
@@ -161,9 +161,69 @@ const joinRoom = async (req, res) => {
       },
     });
 
-    return res.json({ message: "Room joined successfully" });
+    next();
   } catch (error) {
     roomsErrorHandler(error, res);
   }
 };
-export default { getRooms, postRooms, getRoom, putRoom, deleteRoom, joinRoom };
+
+const leaveRoom = async (req, res, next) => {
+  const { id } = req.params;
+  const { id: userId } = req.body;
+
+  try {
+    if (!id) throw "roomIdRequiredError";
+    if (!userId) throw "userIdRequiredError";
+
+    const room = await prisma.room.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        roomUsers: true,
+      },
+    });
+
+    if (!room) throw "notFoundError";
+
+    if (!room.roomUsers.find((user) => user.id === userId)) {
+      return res.status(409).send({
+        error: "You are not in this room",
+      });
+    }
+
+    const updatableRoom = await prisma.room.update({
+      where: {
+        id,
+      },
+      include: {
+        roomUsers: true,
+      },
+      data: {
+        roomUsers: {
+          disconnect: {
+            id: userId,
+          },
+        },
+      },
+    });
+    if (updatableRoom.roomUsers.length === 0) {
+      next();
+    } else {
+      return res.status(200).send({
+        message: "You left the room successfully",
+      });
+    }
+  } catch (error) {
+    roomsErrorHandler(error, res);
+  }
+};
+export default {
+  getRooms,
+  postRooms,
+  getRoom,
+  putRoom,
+  deleteRoom,
+  joinRoom,
+  leaveRoom,
+};
