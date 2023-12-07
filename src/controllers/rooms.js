@@ -115,7 +115,7 @@ const deleteRoom = async (req, res) => {
       },
     });
 
-    return res.json({ message: "Room deleted successfully" });
+    return res.status(204).end();
   } catch (error) {
     roomsErrorHandler(error, res);
   }
@@ -185,6 +185,7 @@ const leaveRoom = async (req, res, next) => {
     });
 
     if (!room) throw "notFoundError";
+    if (room.roomUsers.length === 1 && room.hostId === userId) return next();
 
     if (!room.roomUsers.find((user) => user.id === userId)) {
       return res.status(409).send({
