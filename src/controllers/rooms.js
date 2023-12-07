@@ -9,7 +9,7 @@ const getRooms = async (req, res) => {
   }
 };
 
-const getRoom = async (req, res) => {
+const getRoom = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { roomUsers, filters } = req.body;
@@ -138,7 +138,26 @@ const joinRoom = async (req, res, next) => {
       },
     });
 
-    if (!room) throw "notFoundError";
+    if (!room) {
+      req.body.title = "Private Room";
+      req.body.maxUsers = 12;
+      req.body.isPublic = false;
+      const room = await prisma.room.create({
+        data: {
+          id,
+          title: "Private Room",
+          maxUsers: 12,
+          isPublic: false,
+          hostId: req.body.id,
+          roomUsers: {
+            connect: {
+              id: req.body.id,
+            },
+          },
+        },
+      });
+      return res.status(201).json(room);
+    }
 
     if (room.roomUsers.length >= room.maxUsers) throw "maxUsersError";
 

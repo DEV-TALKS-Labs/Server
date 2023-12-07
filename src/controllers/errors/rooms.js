@@ -13,7 +13,6 @@ class ResponseError {
 }
 
 export default (error, response) => {
-  console.log(error);
   if (error === "notFoundError")
     new ResponseError(404, "Room not found", response).send();
   else if (error === "roomIdRequiredError")
