@@ -51,5 +51,11 @@ export default (error, response) => {
       "You are not the host of this room",
       response
     ).send();
-  else new ResponseError(500, "Internal Server Error", response).send();
+  else if (error === "userAlreadyInRoomError") {
+    new ResponseError(409, "User already in room", response).send();
+  } else if (error === "missingFieldsError") {
+    new ResponseError(409, "Missing fields", response).send();
+  } else if (error === "userNotInRoomError") {
+    new ResponseError(409, "you are not in the room", response).send();
+  } else new ResponseError(500, "Internal Server Error", response).send();
 };

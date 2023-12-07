@@ -25,16 +25,13 @@ model Room {
   title    String  @db.VarChar(255)
   maxUsers Int     @default(12)
   isPublic Boolean @default(true)
-
   roomUsers User[]
-
   host   User   @relation("Host", fields: [hostId], references: [id])
   hostId String @unique
-
   coHost   User?   @relation("CoHost", fields: [coHostId], references: [id])
   coHostId String? @unique
-
   filters Filter[]
+  createdAt DateTime @default(now())
 }
 
 model Filter {

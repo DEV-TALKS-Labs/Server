@@ -15,9 +15,8 @@ const userAuth = async (req, res, next) => {
     const decodingKey = process.env.NEXTAUTH_SECRET;
     const decodedToken = await decode({ token, secret: decodingKey });
     req.body.id = decodedToken.id;
-    next();
+    return next();
   } catch (error) {
-    console.log("decode token error");
     return res.status(409).send({ error: "invalid Tocken" });
   }
 };
