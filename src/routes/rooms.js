@@ -10,5 +10,5 @@ router.post("/", userAuth, roomsController.postRooms);
 router.put("/:id", userAuth, roomsController.putRoom);
 router.delete("/:id", userAuth, roomsController.deleteRoom);
 router.patch("/:id/join", userAuth, roomsController.joinRoom, roomsController.getRoom);
-router.patch("/:id/leave", userAuth, roomsController.leaveRoom, roomsController.deleteRoom);
+router.patch("/:id/leave", roomsController.leaveRoom, roomsController.deleteRoom);
 export default router;
