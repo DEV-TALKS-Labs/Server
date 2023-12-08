@@ -50,7 +50,7 @@ const getRoom = async (req, res, next) => {
         id,
       },
       include: {
-        roomUsers,
+        roomUsers: true,
         filters,
       },
     });
@@ -140,7 +140,7 @@ const postRooms = async (req, res) => {
   try {
     if (maxUsers < 2 || maxUsers > 12) {
       throw "usersCountError";
-    } else if (!title || !maxUsers || !isPublic || !hostId) {
+    } else if (!title || !maxUsers || isPublic == null || !hostId) {
       throw "missingFieldsError";
     } else {
       const room = await prisma.room.create({
