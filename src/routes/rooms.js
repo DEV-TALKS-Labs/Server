@@ -4,7 +4,7 @@ import userAuth from "../midlewares/userAuth.js";
 const router = Router();
 
 router.get("/", roomsController.getRooms);
-
+router.get("/:id", roomsController.getRoom);
 router.post("/", userAuth, roomsController.postRooms);
 router.put("/:id", userAuth, roomsController.putRoom);
 router.delete("/:id", userAuth, roomsController.deleteRoom);
@@ -16,7 +16,6 @@ router.patch(
 );
 router.patch(
   "/:id/leave",
-  userAuth,
   roomsController.leaveRoom,
   roomsController.deleteRoom
 );

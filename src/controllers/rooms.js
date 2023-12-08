@@ -41,6 +41,29 @@ const getRooms = async (req, res) => {
   }
 };
 
+const getRoom = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { roomUsers, filters } = req.body;
+    const room = await prisma.room.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        roomUsers,
+        filters,
+      },
+    });
+
+    if (!room) {
+      throw "notFoundError";
+    }
+    return res.json(room);
+  } catch (error) {
+    roomsErrorHandler(error, res);
+  }
+};
+
 const joinRoom = async (req, res, next) => {
   /* 
     joinRoom function is used to add a user to a room.
@@ -305,5 +328,6 @@ export default {
   putRoom,
   deleteRoom,
   joinRoom,
+  getRoom,
   leaveRoom,
 };
