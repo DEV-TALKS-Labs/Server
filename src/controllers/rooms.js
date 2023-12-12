@@ -162,6 +162,10 @@ const postRooms = async (req, res) => {
           },
         },
       });
+      room._count = {
+        roomUsers: 1,
+      };
+      room.filters = filters || [];
       return res.status(201).json(room);
     }
   } catch (error) {
