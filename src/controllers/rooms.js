@@ -1,5 +1,6 @@
 import prisma from "../libs/prisma.js";
 import roomsErrorHandler from "./errors/rooms.js";
+import { z } from "zod";
 const getRooms = async (req, res) => {
   /* 
     getRooms function is used to get all rooms from the database.
@@ -75,6 +76,16 @@ const joinRoom = async (req, res, next) => {
       If the user is already in the room, it throws an error.
       If the room is private and not full, it throws an error.
   */
+
+  const joinRoomSchema = z.object({
+    id: z.string(),
+  });
+  const validateJoinRoomBody = joinRoomSchema.safeParse(req.body);
+
+  if (!validateJoinRoomBody.success)
+    return res
+      .status(400)
+      .json({ message: validateJoinRoomBody.error.issues[0] });
   const { id } = req.params;
   const { id: userId } = req.body;
 
@@ -135,6 +146,21 @@ const postRooms = async (req, res) => {
     connect the host to the room.
     Returns a response with the created room with response code 201. or throws an error.
   */
+  const postRoomsSchema = z.object({
+    title: z.string().min(3).max(30),
+    maxUsers: z.number().min(2).max(12),
+    isPublic: z.boolean(),
+    id: z.string(),
+    filters: z.array(
+      z.object({
+        name: z.string().min(3).max(30),
+      })
+    ).optional(),
+  });
+  const validatePostRoom = postRoomsSchema.safeParse(req.body);
+  if (!validatePostRoom.success){
+    return res.status(400).json({ message: validatePostRoom.error.issues[0] });
+  }
   const { title, maxUsers, isPublic, id: hostId, filters } = req.body;
 
   try {
@@ -179,6 +205,20 @@ const putRoom = async (req, res) => {
     It accepts a roomId, hostId, title, maxUsers, isPublic, and filters in the request body.
     Returns a response with the updated room with response code 200. or throws an error.
   */
+  const putRoomSchema = z.object({
+    id: z.string(),
+    title: z.string().min(3).max(30),
+    maxUsers: z.number().min(2).max(12),
+    isPublic: z.boolean(),
+    filters: z.array(
+      z.object({
+        name: z.string().min(3).max(30),
+      })
+    ).optional(),
+  });
+  const validatePutRoom = putRoomSchema.safeParse(req.body);
+  if (!validatePutRoom.success)
+    return res.status(400).json({ message: validatePutRoom.error.issues[0] });
   const { id } = req.params;
   const { id: hostId } = req.body;
   const { title, maxUsers, isPublic, filters } = req.body;
@@ -221,6 +261,14 @@ const deleteRoom = async (req, res) => {
     It accepts a roomId and hostId in the request body.
     Returns a response with response code 204. or throws an error.
   */
+  const deleteRoomSchema = z.object({
+    id: z.string(),
+  });
+  const validateDeleteRoom = deleteRoomSchema.safeParse(req.body);
+  if (!validateDeleteRoom.success)
+    return res
+      .status(400)
+      .json({ message: validateDeleteRoom.error.issues[0] });
 
   const { id } = req.params;
   const { id: hostId } = req.body;
@@ -257,6 +305,14 @@ const leaveRoom = async (req, res, next) => {
     If the user was the only user in the room, it deletes the room.
     Returns a response with response code 200. or throws an error.
   */
+  const leaveRoomSchema = z.object({
+    id: z.string(),
+  });
+  const validateLeaveRoom = leaveRoomSchema.safeParse(req.body);
+  if (!validateLeaveRoom.success)
+    return res
+      .status(400)
+      .json({ message: validateLeaveRoom.error.issues[0].message });
   const { id } = req.params;
   const { id: userId } = req.body;
 
