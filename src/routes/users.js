@@ -15,7 +15,7 @@ const router = Router();
  *        application/json:
  *          example:
  *            id: "c7bfdb12-4825-4ea9-9c54-2c05dd7e860f"
- *            name: "John Doe"
+ *            name: "TutTrue"
  *            imageUrl: "https://example.com/profile.jpg"
  *    responses:
  *      201:
