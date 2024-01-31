@@ -1,194 +1,149 @@
-# server
+# DEV TALKS REST API
 
-# API Documentation
+## Overview
 
-## Get Rooms
+This is the official REST API for DEV TALKS, providing endpoints to interact with filters, rooms, and users.
 
-Endpoint: `/api/rooms`  
-Method: `GET`
+this api used to serve the [DEV TALKS] web application.
 
-### Description
+## Base URL
 
-The `getRooms` function retrieves all rooms from the database. It accepts an optional `orderBy` object in the request body to specify the sorting criteria for the rooms. By default, rooms are sorted by creation date in descending order. The endpoint returns a response with a count of rooms and an array of room details.
+- Development Server: [http://localhost:8080](http://localhost:8080)
 
-### Request
+## Authentication
 
-- Method: `GET`
-- URL: `/api/rooms`
-- Body (optional):
+TODO: Include information about any authentication mechanisms, if applicable.
 
-  ```json
-  {
-    "orderBy": {
-      "createdAt": "desc"
-    }
-  }
-  ```
+## Endpoints
 
-- respose:
+### 1. Get All Filters
 
-  ```json
-  {
-   "count": 7,
-   "data": [
-       {
-           "id": "1f96e7ab-4742-4480-a073-91db2bac3f8e",
-           "title": "",
-           "maxUsers": 12,
-           "isPublic": true,
-           "hostId": "2",
-           "coHostId": null,
-           "createdAt": "2023-12-07T13:44:31.593Z",
-           "filters": [
-               {
-                   "id": "519d80fe-d5de-4d54-a5c1-6a4b9e250ea7",
-                   "name": "Backend"
-               },
-               {
-                   "id": "2eff57f2-9042-487f-ad80-e35b5fca20bb",
-                   "name": "DevOps"
-               }
-           ],
-           "_count": {
-               "roomUsers": 2
-           }
-       },
-  	{
-           "id": "2aasfasr-4742-4480-a073-easf2bac3f8e",
-           "title": "",
-           "maxUsers": 12,
-           "isPublic": true,
-           "hostId": "2",
-           "coHostId": null,
-           "createdAt": "2023-12-07T13:44:31.593Z",
-           "filters": [
-               {
-                   "id": "519d80fe-d5de-4d54-a5c1-6a4b9e250ea7",
-                   "name": "Backend"
-               },
-               {
-                   "id": "3eff57f2-9042-487f-ad80-e35b5fca20bb",
-                   "name": "Frontend"
-               }
-           ],
-           "_count": {
-               "roomUsers": 5
-           }
-       },
-  	...
-  	]
-  }
-  ```
+- **Endpoint:** `/api/filters`
+- **Method:** `GET`
+- **Description:** Get all filters.
+- **Response:**
+  - `200 OK` - Successful response with filters.
+  - `500 Internal Server Error` - Internal Server Error.
 
-## PATCH /api/rooms/:id/join
+### 2. Get Rooms for a Specific Filter
 
-### Description
+- **Endpoint:** `/api/filters/{id}/rooms`
+- **Method:** `GET`
+- **Description:** Get rooms for a specific filter.
+- **Parameters:**
+  - `{id}` (Path Parameter) - The ID of the filter.
+- **Response:**
+  - `200 OK` - Successful response with filtered rooms.
+  - `404 Not Found` - Filter not found.
+  - `500 Internal Server Error` - Internal Server Error.
 
-The `joinRoom` function is used to add a user to a room. It accepts a roomId and userId in the request body. If the room is public and not full, it adds the user to the room. Else, if the room doesn't exist, it creates a private room. If the room is full, it throws an error. If the user is already in the room, it throws an error. If the room is private and not full, it throws an error.
+### 3. Get All Public Rooms
 
-### Request
+- **Endpoint:** `/api/rooms`
+- **Method:** `GET`
+- **Description:** Get all public rooms.
+- **Response:**
+  - `200 OK` - Successful response with public rooms.
+  - `500 Internal Server Error` - Internal Server Error.
 
-- Method: `PATCH`
-- URL: `/api/rooms/:id/join`
-- Body:
+### 4. Create a New Room
 
-- respose:
+- **Endpoint:** `/api/rooms`
+- **Method:** `POST`
+- **Description:** Create a new room.
+- **Request Body:**
+  - JSON object with room details.
+- **Response:**
+  - `201 Created` - Room created successfully.
+  - `403 Forbidden` - Max users count reached or invalid user input.
+  - `500 Internal Server Error` - Internal Server Error.
 
-  ```json
-  {
-    "id": "1f96e7ab-4742-4480-a073-91db2bac3f8e",
-    "title": "",
-    "maxUsers": 12,
-    "isPublic": true,
-    "hostId": "2",
-    "coHostId": null,
-    "createdAt": "2023-12-07T13:44:31.593Z",
-    "roomUsers": [
-      {
-        "id": "1",
-        "name": "Emad",
-        "imageUrl": "https://avatars.githubusercontent.com/u/47259812?v=4",
-        "roomId": "1f96e7ab-4742-4480-a073-91db2bac3f8e"
-      },
-      {
-        "id": "2",
-        "name": "Tut",
-        "imageUrl": "https://avatars.githubusercontent.com/u/45897778?v=4",
-        "roomId": "1f96e7ab-4742-4480-a073-91db2bac3f8e"
-      }
-    ],
-    "filters": [
-      {
-        "id": "519d80fe-d5de-4d54-a5c1-6a4b9e250ea7",
-        "name": "Backend"
-      },
-      {
-        "id": "2eff57f2-9042-487f-ad80-e35b5fca20bb",
-        "name": "DevOps"
-      }
-    ]
-  }
-  ```
+### 5. Get Details of a Specific Room
 
-## PUT /api/rooms/:id
+- **Endpoint:** `/api/rooms/{id}`
+- **Method:** `GET`
+- **Description:** Get details of a specific room.
+- **Parameters:**
+  - `{id}` (Path Parameter) - The ID of the room.
+- **Response:**
+  - `200 OK` - Successful response with room details.
+  - `404 Not Found` - Room not found.
+  - `500 Internal Server Error` - Internal Server Error.
 
-### Description
+### 6. Update Details of a Specific Room
 
-The `putRoom` function is used to update a room. It accepts a roomId, hostId, title, maxUsers, isPublic, and filters in the request body. Returns a response with the updated room with response code 200. or throws an error.
+- **Endpoint:** `/api/rooms/{id}`
+- **Method:** `PUT`
+- **Description:** Update details of a specific room.
+- **Parameters:**
+  - `{id}` (Path Parameter) - The ID of the room.
+- **Request Body:**
+  - JSON object with updated room details.
+- **Response:**
+  - `200 OK` - Room updated successfully.
+  - `403 Forbidden` - Max users count reached or invalid user input.
+  - `404 Not Found` - Room not found.
+  - `500 Internal Server Error` - Internal Server Error.
 
-### Request
+### 7. Delete a Specific Room
 
-- Method: `PUT`
-- URL: `/api/rooms/:id`
-- request body:
+- **Endpoint:** `/api/rooms/{id}`
+- **Method:** `DELETE`
+- **Description:** Delete a specific room.
+- **Parameters:**
+  - `{id}` (Path Parameter) - The ID of the room.
+- **Response:**
+  - `204 No Content` - Room deleted successfully.
+  - `403 Forbidden` - Invalid user input or user not authorized to delete the room.
+  - `404 Not Found` - Room not found.
+  - `500 Internal Server Error` - Internal Server Error.
 
-  ```json
-  {
-    "id": "1f96e7ab-4742-4480-a073-91db2bac3f8e",
-    "title": "new title",
-    "maxUsers": 12,
-    "isPublic": true,
-    "hostId": "2",
-    "coHostId": "3"
-  }
-  ```
+### 8. Join a Specific Room
 
-- respose:
+- **Endpoint:** `/api/rooms/{id}/join`
+- **Method:** `PATCH`
+- **Description:** Join a specific room.
+- **Parameters:**
+  - `{id}` (Path Parameter) - The ID of the room.
+- **Request Body:**
+  - JSON object with user ID.
+- **Response:**
+  - `200 OK` - User joined the room successfully.
+  - `403 Forbidden` - Max users count reached or invalid user input.
+  - `404 Not Found` - Room not found.
+  - `409 Conflict` - User already in the room.
+  - `500 Internal Server Error` - Internal Server Error.
 
-  ```json
-  {
-    "id": "1f96e7ab-4742-4480-a073-91db2bac3f8e",
-    "title": "new title",
-    "maxUsers": 12,
-    "isPublic": true,
-    "hostId": "2",
-    "coHostId": "3",
-    "createdAt": "2023-12-07T13:44:31.593Z"
-  }
-  ```
+### 9. Leave a Specific Room
 
-## DELETE /api/rooms/:id
+- **Endpoint:** `/api/rooms/{id}/leave`
+- **Method:** `PATCH`
+- **Description:** Leave a specific room.
+- **Parameters:**
+  - `{id}` (Path Parameter) - The ID of the room.
+- **Request Body:**
+  - JSON object with user ID.
+- **Response:**
+  - `200 OK` - User left the room successfully.
+  - `403 Forbidden` - Invalid user input or user not authorized to leave the room.
+  - `404 Not Found` - Room not found.
+  - `409 Conflict` - User not in the room.
+  - `500 Internal Server Error` - Internal Server Error.
 
-### Description
+### 10. Create a New User
 
-The `deleteRoom` function is used to delete a room. It accepts a roomId in the request body. Returns a response with the deleted room with response code 204. or throws an error.
+- **Endpoint:** `/api/users`
+- **Method:** `POST`
+- **Description:** Create a new user.
+- **Request Body:**
+  - JSON object with user details.
+- **Response:**
+  - `200 OK` - User already exists.
+  - `201 Created` - User created successfully.
+  - `500 Internal Server Error` - Internal Server Error.
 
-### Request
+## Tags
 
-- Method: `DELETE`
-- URL: `/api/rooms/:id`
-- request body:
-
-  ```json
-  {
-    "hostId": "1f96e7ab-4742-4480-a073-91db2bac3f8e"
-  }
-  ```
-
-- respose:
-
-  ```json
-  {}
-  ```
-
-  
+- Filters
+- Rooms
+- Users
