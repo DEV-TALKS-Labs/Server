@@ -1,8 +1,16 @@
 import prisma from "../libs/prisma.js";
+import { z } from "zod";
 
 const postUser = async (req, res) => {
+  const postUserSchema = z.object({
+    id: z.string(),
+    name: z.string().min(1).max(255),
+    imageUrl: z.string().url(),
+  });
+  const validatePostUser = postUserSchema.safeParse(req.body);
+  if (!validatePostUser.success)
+    return res.status(400).json({ message: validatePostUser.error.issues[0] });
   try {
-    //TODO pass name, imageUrl from fronted
     const { id, name, imageUrl } = req.body;
     const user = await prisma.user.create({
       data: {
