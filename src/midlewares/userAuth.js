@@ -9,7 +9,6 @@ const userAuth = async (req, res, next) => {
     console.log("no token");
     return res.status(409).send({ error: "invalid Tocken" });
   }
-  console.log("url", req.url);
 
   try {
     const decodingKey = process.env.NEXTAUTH_SECRET;
