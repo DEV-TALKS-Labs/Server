@@ -1,6 +1,6 @@
-import { Router } from "express";
-import roomsController from "../controllers/rooms.js";
-import userAuth from "../midlewares/userAuth.js";
+import { Router } from 'express';
+import roomsController from '../controllers/rooms.js';
+import userAuth from '../midlewares/userAuth.js';
 const router = Router();
 
 /**
@@ -23,17 +23,27 @@ const router = Router();
  *                  maxUsers: 5
  *                  isPublic: true
  *                  hostId: "host_user_id"
+ *                  createdAt: "2024-01-01T12:00:00.000Z"
+ *                  coHostId: null,
  *                  filters: []
+ *                  _count:
+ *                     roomUsers: 4
+ *
  *                - id: "a3db2fe4-1457-4b8f-a1e9-938de18b8e79"
  *                  title: "Sample Room 2"
  *                  maxUsers: 10
  *                  isPublic: true
  *                  hostId: "host_user_id"
  *                  filters: []
+ *                  createdAt: "2024-01-01T12:00:00.000Z"
+ *                  coHostId: null,
+ *                  _count:
+ *                    roomUsers: 2
+ * 
  *      500:
  *        description: Internal Server Error
  */
-router.get("/", roomsController.getRooms);
+router.get('/', roomsController.getRooms);
 
 /**
  * @openapi
@@ -74,7 +84,7 @@ router.get("/", roomsController.getRooms);
  *             example:
  *               error: "Internal Server Error"
  */
-router.get("/:id", roomsController.getRoom);
+router.get('/:id', roomsController.getRoom);
 
 /**
  * @openapi
@@ -118,7 +128,7 @@ router.get("/:id", roomsController.getRoom);
  *             example:
  *               error: "Internal Server Error"
  */
-router.post("/", userAuth, roomsController.postRooms);
+router.post('/', userAuth, roomsController.postRooms);
 
 /**
  * @openapi
@@ -174,7 +184,7 @@ router.post("/", userAuth, roomsController.postRooms);
  *             example:
  *               error: "Internal Server Error"
  */
-router.put("/:id", userAuth, roomsController.putRoom);
+router.put('/:id', userAuth, roomsController.putRoom);
 
 /**
  * @openapi
@@ -212,7 +222,7 @@ router.put("/:id", userAuth, roomsController.putRoom);
  *             example:
  *               error: "Internal Server Error"
  */
-router.delete("/:id", userAuth, roomsController.deleteRoom);
+router.delete('/:id', userAuth, roomsController.deleteRoom);
 
 /**
  * @openapi
@@ -267,7 +277,7 @@ router.delete("/:id", userAuth, roomsController.deleteRoom);
  *               error: "Internal Server Error"
  */
 router.patch(
-  "/:id/join",
+  '/:id/join',
   userAuth,
   roomsController.joinRoom,
   roomsController.postRooms
@@ -326,7 +336,7 @@ router.patch(
  *               error: "Internal Server Error"
  */
 router.patch(
-  "/:id/leave",
+  '/:id/leave',
   roomsController.leaveRoom,
   roomsController.deleteRoom
 );
